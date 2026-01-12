@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Device Verification</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 24px; color: #111; background:#f7fafc; }
+    .card { max-width:640px; margin:40px auto; padding:20px; border-radius:8px; background:white; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+    .btn { display:inline-block; margin-top:14px; padding:10px 14px; background:#2563eb; color:white; border-radius:6px; text-decoration:none; }
+    .muted { color:#6b7280; font-size:0.95rem; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Device verification</h2>
+    <p id="msg">Preparing verification…</p>
+    <div id="actions" style="display:none;">
+      <a id="openBtn" class="btn" href="#">Open verification</a>
+      <div class="muted">If redirect does not happen automatically, press the button above. Make sure you opened this link in the Telegram in-app browser.</div>
+    </div>
+    <div class="muted" style="margin-top:12px;">If you did not request verification, just close this page.</div>
+  </div>
+
+  <script>
+    (function() {
+      // CONFIG: set your bot public endpoint (must include protocol and host, no trailing slash)
+      // Example: const BOT_DEVICE_URL_BASE = "https://your-bot-domain.com";
+      const BOT_DEVICE_URL_BASE = "https://YOUR_BOT_DOMAIN"; // <-- REPLACE with your bot's public domain
+
+      // read token from query string
+      function qs(name) {
+        const params = new URLSearchParams(window.location.search);
+        return params.get(name);
+      }
+      const token = qs('token');
+
+      if (!token) {
+        document.getElementById('msg').innerText = 'Invalid or missing token.';
+        return;
+      }
+
+      // construct destination URL to bot's /device handler
+      const dest = BOT_DEVICE_URL_BASE.replace(/\/$/, '') + '/device?token=' + encodeURIComponent(token);
+
+      document.getElementById('msg').innerText = 'Redirecting to verification endpoint...';
+      const openBtn = document.getElementById('openBtn');
+      openBtn.href = dest;
+      document.getElementById('actions').style.display = 'block';
+
+      // auto-redirect after a short delay (gives user a chance to read)
+      setTimeout(function() {
+        // Use location.replace which does not create extra history entry
+        window.location.replace(dest);
+      }, 1200);
+    })();
+  </script>
+</body>
+</html>
